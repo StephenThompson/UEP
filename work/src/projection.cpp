@@ -295,7 +295,7 @@ float Projection::interpolateNoise2D(float x, float y){
 	float v4 = smoothNoise2D(ix+1,iy+1);
 
 	float i1 = interpolation(v1,v2,fx);
-	float i2 = interpolation(v3,v3,fx);
+	float i2 = interpolation(v3,v4,fx);
 
 	return interpolation(i1,i2,fy);
 }
