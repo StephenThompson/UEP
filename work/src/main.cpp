@@ -25,11 +25,13 @@ Geometry* model = nullptr;
 Geometry* modelScissortail = nullptr;
 Geometry* modelDolphin = nullptr;
 Geometry* modelHerring = nullptr;
+Geometry* modelSpongeBob = nullptr;
 
 GLuint g_texBannerfish = 0;
 GLuint g_texScissortail = 0;
 GLuint g_texdolphin = 0;
 GLuint g_texHerring = 0;
+GLuint g_texSpongeBob = 0;
 GLuint g_shaderFish = 0;
 
 // mouse controls
@@ -274,12 +276,14 @@ int main(void)
 	initTexture(&g_texScissortail, "../work/res/textures/Scissor_Tail_Sergeant.jpg");
 	initTexture(&g_texdolphin, "../work/res/textures/shortbeaked_dolphin.jpg");
 	initTexture(&g_texHerring, "../work/res/textures/Atlantic_Herring.jpg");
+	initTexture(&g_texSpongeBob, "../work/res/textures/spongebob.png");
 
 	initShader();
 	model = new Geometry("../work/res/models/schooling_bannerfish.obj", g_texBannerfish, g_shaderFish, false);
 	modelScissortail = new Geometry("../work/res/models/scissortail_sergeant.obj", g_texScissortail, g_shaderFish, false);
 	modelDolphin = new Geometry("../work/res/models/shortbeaked_dolphin.obj", g_texdolphin, g_shaderFish, true);
 	modelHerring = new Geometry("../work/res/models/atlantic_herring.obj", g_texHerring, g_shaderFish, false);
+	modelSpongeBob = new Geometry("../work/res/models/spongebob.obj", g_texSpongeBob, g_shaderFish, false);
 
 	float size = 2000.f;
 	sceneMng = new SceneManager(vec3(-size, -size/4, -size), vec3(size, size/4, size));
@@ -289,6 +293,7 @@ int main(void)
 	sceneMng->addSystem(200, model, bfs, 1.f, PREY);
 	sceneMng->addSystem(200, modelScissortail, bfs, 0.8f, PREY);
 	sceneMng->addSystem(200, modelHerring, bfs, 2.2f, PREY);
+	sceneMng->addSystem(5, modelSpongeBob, bfs, 2.2f, PREY);
 
 	PredatorStrategy *predStrat = new PredatorStrategy();
 	sceneMng->addSystem(100, modelDolphin, predStrat, 10.f, PREDATOR);
@@ -481,6 +486,7 @@ int main(void)
 	delete model;
 	delete modelScissortail;
 	delete modelHerring;
+	delete modelSpongeBob;
 	delete sceneMng;
 	delete predStrat;
 
