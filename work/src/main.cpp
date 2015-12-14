@@ -323,7 +323,7 @@ int main(void)
     	float y = 01;//g_projection->getHeight(x,z);
     	//float y = g_projection->getHeight(x,z);
     	vec3 color = vec3((noise(i*3)+1)/2, (noise(i*11)+1)/2, (noise(i*7)+1)/2) ;
-    	if(type<3){
+    	if(type<5){
     		Coral c = Coral("X", i, x, y, z, ((noise(i*7)+2)/2), color.r, color.g, color.b);
     		int growthNum = (int)(((noise(i)+1)/2)*3)+2;;
     		if(type==0){
@@ -374,7 +374,7 @@ int main(void)
 		nbFrames++;
 		if (currentTime - lastTime >= 1.0){ // If last prinf() was more than 1 sec ago
 			// printf and reset timer
-			printf("%f ms/frame\n", 1000.0 / double(nbFrames));
+			printf("%f ms/frame, %f fps\n", 1000.0 / double(nbFrames), 1000.0 / (1000.0 / double(nbFrames)));
 			nbFrames = 0;
 			lastTime += 1.0;
 		}
