@@ -25,8 +25,8 @@ void main() {
 
     vec4 blended = (texel0*(BlendFactor)+texel1*(1.f-BlendFactor));
     vec4 mixed = mix(texel0.rrrr,vec4(0.15f,0.5f,0.65f,1.0f),vec4(0.15f,0.5f,0.65f,1.0f));
-    gl_FragColor = blended*mixed*curVertex.y*brightness;
+    //gl_FragColor = blended*mixed*curVertex.y*brightness;
     
-    gl_FragColor = mix(blended*mixed*curVertex.y*brightness, vec4(15 / 255.f, 70 / 255.f, 126 / 255.f, 1.f)*0.9f, max(0, min(1, vPosition.z/1500.f - curVertex.y / 5.f)));
-    //gl_FragColor = mixed;
+    gl_FragColor = mix(blended*mixed*(-curVertex.y/450.f)*brightness, vec4(15 / 255.f, 70 / 255.f, 126 / 255.f, 1.f)*0.9f, max(0, min(1, vPosition.z/1500.f - (-curVertex.y/450.f) / 5.f)));
+    //gl_FragColor = blended*mixed*brightness*(-curVertex.y/450.f);
 }
