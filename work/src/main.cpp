@@ -301,7 +301,7 @@ int main(void)
 	// Cullum
 	sandTexture();
 	//initCubeMap("work/res/textures/cubeMap.jpg");
-	g_projection = new Projection(9000);
+	g_projection = new Projection();
 	g_voroni = new Voronoi();
 	g_voroni->render();
 
@@ -311,20 +311,24 @@ int main(void)
     vector<SpaceCoral> spaceCoral;
 
     //Make some coral
-    int numOfCoral = 100;
-    int maxX = 80;
-    int maxZ = 80;
+    int numOfCoral = 50;
+    int maxX = 2000;
+    int maxZ = 2000;
     for(int i=0; i<numOfCoral; i++){
     	int type = (int)(rand()%6);
-//    	float x = (rand()%200/100.f-1)*maxX;
-//    	float z = (rand()%200/100.f-1)*maxZ;
-    	float x = (rand()%200/200.f)*maxX;
-    	float z = (rand()%200/200.f)*maxZ;
-    	float y = 01;//g_projection->getHeight(x,z);
-    	//float y = g_projection->getHeight(x,z);
+
+    	float x = (int)((rand()%200/200.f)*maxX)- maxX/2;
+    	float z = (int)((rand()%200/200.f)*maxZ)- maxZ/2;
+
+		cout << x << " " << z;
+
+
+		float y = g_projection->getHeight(x, z)+2;
+		//if (type >= 3) type = 2;
+		cout << y << " Here " << endl;
     	vec3 color = vec3((noise(i*3)+1)/2, (noise(i*11)+1)/2, (noise(i*7)+1)/2) ;
     	if(type<3){
-    		Coral c = Coral("X", i, x, y, z, ((noise(i*7)+2)/2), color.r, color.g, color.b);
+    		Coral c = Coral("X", i, x, y, z, 35*((noise(i*7)+2)/2), color.r, color.g, color.b);
     		int growthNum = (int)(((noise(i)+1)/2)*3)+2;;
     		if(type==0){
     			c.addRule('X', "D[#<^-DX]&[#>_+DX]&D[#<_DX]&[#>^DX]&");
@@ -339,6 +343,7 @@ int main(void)
     		}
     		c.generateCoral(1);
     		normCoral.push_back(c);
+			
     	}else{
     		float baseH = (((noise(i*3)+1)/2)*2);
     		float baseW = (((noise(i*3)+1)/2)+0.5f);
@@ -360,7 +365,9 @@ int main(void)
     		s.Grow();
     		spaceCoral.push_back(s);
     	}
+		
     	cout<<"Coral "<<i<<endl;
+		
     }
 
 	// fps counter taken from http://www.opengl-tutorial.org/miscellaneous/an-fps-counter/
@@ -447,14 +454,10 @@ int main(void)
 
 		// Cullum
 		glEnable(GL_TEXTURE_2D);
-		setupShader();
-		//genShadowMap();
-		glPushMatrix();
-		  glScalef(100, 100, 100);
-		  glTranslatef(-20, -3, -20);
-		  glRotatef(270, 1, 0, 0);
-		  g_projection->renderLandscape();
-		glPopMatrix();
+		setupShader();	
+		
+		g_projection->renderLandscape();
+
 
 		// Callum
 		glEnable(GL_TEXTURE_2D);
@@ -463,10 +466,7 @@ int main(void)
 		glUniform1i(glGetUniformLocation(g_shader, "texture0"), 0);
 		glUniform1f(glGetUniformLocation(g_shader, "shift"), shift);
 		glPushMatrix();
-
-
-	  glTranslatef(-200, -214, -200);
-	  glScalef(4, 4, 4);
+		
 		for(Coral c : normCoral){
 			glPushMatrix();
 			c.draw();
