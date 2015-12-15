@@ -110,7 +110,7 @@ vec3 PreyStrategy::mainRules(vector<Boid*>* b, Boid* parent, bool *pred){
 	}
 
 	//return cohesion;// *0.5f + predator; alignment + 
-	return separation + alignment * 0.4f + cohesion * 0.1f + predator;
+	return separation + alignment * 0.2f + cohesion * 0.1f + predator;
 }
 
 

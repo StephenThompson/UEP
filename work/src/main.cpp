@@ -39,6 +39,7 @@ bool g_mouseDown = false;
 bool g_showCoral = false;
 bool g_showFish = false;
 bool g_showLand = true;
+bool g_shift = false;
 vec2 g_mousePos;
 vec3 g_cameraPos = vec3(0,-200,0);
 float g_yRotation = 0;
@@ -99,14 +100,18 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	if (key == GLFW_KEY_L && action == GLFW_RELEASE)
 		g_showLand = !g_showLand;
 
+	if (key == GLFW_KEY_LEFT_SHIFT)
+		g_shift = action != GLFW_RELEASE;
+
+	float speed = g_shift ? 20 : 5;
 	if (key == GLFW_KEY_W)
-		g_cameraPos -= vec3(cos(radians(g_yRotation)), sin(radians(g_xRotation)), sin(radians(g_yRotation))) * 5.f;
+		g_cameraPos -= vec3(cos(radians(g_yRotation)), sin(radians(g_xRotation)), sin(radians(g_yRotation))) * speed;
 	if (key == GLFW_KEY_S)
-		g_cameraPos += vec3(cos(radians(g_yRotation)), sin(radians(g_xRotation)), sin(radians(g_yRotation))) * 5.f;
+		g_cameraPos += vec3(cos(radians(g_yRotation)), sin(radians(g_xRotation)), sin(radians(g_yRotation))) * speed;
 	if (key == GLFW_KEY_A)
-		g_cameraPos += vec3(cos(radians(g_yRotation+90)), 0, sin(radians(g_yRotation+90))) * 5.f;
+		g_cameraPos += vec3(cos(radians(g_yRotation + 90)), 0, sin(radians(g_yRotation + 90))) * speed;
 	if (key == GLFW_KEY_D)
-		g_cameraPos -= vec3(cos(radians(g_yRotation+90)), 0, sin(radians(g_yRotation+90))) * 5.f;
+		g_cameraPos -= vec3(cos(radians(g_yRotation + 90)), 0, sin(radians(g_yRotation + 90))) * speed;
 	
 }
 
@@ -311,17 +316,10 @@ int main(void)
 	sceneMng->addSystem(200, model, bfs, 1.f, PREY);
 	sceneMng->addSystem(200, modelScissortail, bfs, 0.8f, PREY);
 	sceneMng->addSystem(200, modelHerring, bfs, 2.2f, PREY);
-<<<<<<< HEAD
 	sceneMng->addSystem(1, modelSpongeBob, bfs, 2.f, PREY);
 
 	PredatorStrategy *predStrat = new PredatorStrategy();
 	sceneMng->addSystem(9, modelDolphin, predStrat, 10.f, PREDATOR);
-=======
-	sceneMng->addSystem(1, modelSpongeBob, bfs, 25.2f, PREY);
-
-	PredatorStrategy *predStrat = new PredatorStrategy();
-	sceneMng->addSystem(10, modelDolphin, predStrat, 10.f, PREDATOR);
->>>>>>> origin/master
 
 
 	// Callum
@@ -334,11 +332,7 @@ int main(void)
     int maxX = 2000;
     int maxZ = 2000;
     for(int i=0; i<numOfCoral; i++){
-<<<<<<< HEAD
     	int type = (int)(rand()%10);
-=======
-    	int type = (int)(rand()%4);
->>>>>>> origin/master
 
     	float x = (int)((rand()%200/200.f)*maxX)- maxX/2;
     	float z = (int)((rand()%200/200.f)*maxZ)- maxZ/2;
@@ -407,13 +401,8 @@ int main(void)
 		// Measure speed
 		double currentTime = glfwGetTime();
 		nbFrames++;
-<<<<<<< HEAD
-		if (currentTime - lastTime >= 1.0){ // If last prinf() was more than 1 sec ago
-			// printf and reset timer
-=======
 		if (currentTime - lastTime >= 1.0) { // If last prinf() was more than 1 sec ago
 											 // printf and reset timer
->>>>>>> origin/master
 			printf("%f ms/frame, %f fps\n", 1000.0 / double(nbFrames), 1000.0 / (1000.0 / double(nbFrames)));
 			nbFrames = 0;
 			lastTime += 1.0;
@@ -488,11 +477,7 @@ int main(void)
 		glEnable(GL_TEXTURE_2D);
 		setupShader();	
 		
-<<<<<<< HEAD
-		g_projection->renderLandscape();
-=======
 		if (g_showLand) g_projection->renderLandscape();
->>>>>>> origin/master
 
 		// Callum
 		
@@ -502,50 +487,28 @@ int main(void)
 		glUniform1i(glGetUniformLocation(g_shader, "texture0"), 0);
 		glUniform1f(glGetUniformLocation(g_shader, "shift"), shift);
 		
-<<<<<<< HEAD
-		for(Coral c : normCoral){
-			glPushMatrix();
-			c.draw();
-			glPopMatrix();
-		}
-		for(SpaceCoral c : spaceCoral){
-			glPushMatrix();
-			glScalef(20, 20, 20);
-			c.Draw();
-			glPopMatrix();
-		}
-		glPopMatrix();
-
-=======
 		if (g_showCoral) {
-			for (Coral c : normCoral) {
+			for (Coral c : normCoral){
 				glPushMatrix();
 				c.draw();
 				glPopMatrix();
 			}
-			for (SpaceCoral c : spaceCoral) {
+			for (SpaceCoral c : spaceCoral){
 				glPushMatrix();
+				glScalef(20, 20, 20);
 				c.Draw();
 				glPopMatrix();
 			}
 		}
-		
->>>>>>> origin/master
+
 		// Stephen
 		// Enable Drawing texures
 		glEnable(GL_TEXTURE_2D);
 		if (g_simulate){
 			sceneMng->stepSimulation();
 		}
-<<<<<<< HEAD
-=======
-		glPushMatrix();
-		  glTranslatef(0, 0, 0);
-		  if (g_showFish)sceneMng->draw();
-		glPopMatrix();
->>>>>>> origin/master
 
-		sceneMng->draw();
+		if (g_showFish)sceneMng->draw();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
