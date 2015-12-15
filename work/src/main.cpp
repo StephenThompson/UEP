@@ -199,7 +199,7 @@ void initShader() {
 }
 
 void initLight() {
-	float direction[]	  = {0.7f, 1.0f, 0.5f, 0.0f};
+	float direction[]	  = {-0.7f, 1.0f, 0.5f, 0.0f};
 	float diffintensity[] = {0.7f, 0.7f, 0.7f, 1.0f};
 	float ambient[]       = {0.5f, 0.5f, 0.5f, 1.0f};
 
@@ -271,7 +271,14 @@ int main(void)
 	glfwSetCursorPosCallback(window, cursor_pos_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 
-	//
+	// Cullum
+	sandTexture();
+	//initCubeMap("work/res/textures/cubeMap.jpg");
+	g_projection = new Projection();
+	g_voroni = new Voronoi();
+	g_voroni->render();
+
+	// Stephen
 	initTexture(&g_texBannerfish, "../work/res/textures/Schooling_Bannerfish.jpg");
 	initTexture(&g_texScissortail, "../work/res/textures/Scissor_Tail_Sergeant.jpg");
 	initTexture(&g_texdolphin, "../work/res/textures/shortbeaked_dolphin.jpg");
@@ -285,25 +292,19 @@ int main(void)
 	modelHerring = new Geometry("../work/res/models/atlantic_herring.obj", g_texHerring, g_shaderFish, false);
 	modelSpongeBob = new Geometry("../work/res/models/spongebob.obj", g_texSpongeBob, g_shaderFish, false);
 
-	float size = 2000.f;
-	sceneMng = new SceneManager(vec3(-size, -size/4, -size), vec3(size, size/4, size));
+	float size = 1000.f;
+	sceneMng = new SceneManager(vec3(-size, -size / 2, -size), vec3(size, size / 4, size), g_projection);
 
 	PreyStrategy* bfs = new PreyStrategy();
 
 	sceneMng->addSystem(200, model, bfs, 1.f, PREY);
 	sceneMng->addSystem(200, modelScissortail, bfs, 0.8f, PREY);
 	sceneMng->addSystem(200, modelHerring, bfs, 2.2f, PREY);
-	sceneMng->addSystem(5, modelSpongeBob, bfs, 2.2f, PREY);
+	sceneMng->addSystem(1, modelSpongeBob, bfs, 2.f, PREY);
 
 	PredatorStrategy *predStrat = new PredatorStrategy();
-	sceneMng->addSystem(100, modelDolphin, predStrat, 10.f, PREDATOR);
+	sceneMng->addSystem(9, modelDolphin, predStrat, 10.f, PREDATOR);
 
-	// Cullum
-	sandTexture();
-	//initCubeMap("work/res/textures/cubeMap.jpg");
-	g_projection = new Projection();
-	g_voroni = new Voronoi();
-	g_voroni->render();
 
 	// Callum
 
@@ -315,7 +316,7 @@ int main(void)
     int maxX = 2000;
     int maxZ = 2000;
     for(int i=0; i<numOfCoral; i++){
-    	int type = (int)(rand()%6);
+    	int type = (int)(rand()%10);
 
     	float x = (int)((rand()%200/200.f)*maxX)- maxX/2;
     	float z = (int)((rand()%200/200.f)*maxZ)- maxZ/2;
@@ -327,13 +328,9 @@ int main(void)
 		//if (type >= 3) type = 2;
 		cout << y << " Here " << endl;
     	vec3 color = vec3((noise(i*3)+1)/2, (noise(i*11)+1)/2, (noise(i*7)+1)/2) ;
-<<<<<<< HEAD
-    	if(type<5){
-    		Coral c = Coral("X", i, x, y, z, ((noise(i*7)+2)/2), color.r, color.g, color.b);
-=======
-    	if(type<3){
-    		Coral c = Coral("X", i, x, y, z, 35*((noise(i*7)+2)/2), color.r, color.g, color.b);
->>>>>>> origin/master
+
+		if (type<3 || type > 5){
+    		Coral c = Coral("X", i, x, y, z, 25*((noise(i*7)+2)/2), color.r, color.g, color.b);
     		int growthNum = (int)(((noise(i)+1)/2)*3)+2;;
     		if(type==0){
     			c.addRule('X', "D[#<^-DX]&[#>_+DX]&D[#<_DX]&[#>^DX]&");
@@ -350,6 +347,9 @@ int main(void)
     		normCoral.push_back(c);
 			
     	}else{
+			x /= 20;
+			y /= 20;
+			z /= 20;
     		float baseH = (((noise(i*3)+1)/2)*2);
     		float baseW = (((noise(i*3)+1)/2)+0.5f);
     		float shapeW = (((noise(i*3)+1)/2)*3.5f+0.5f);
@@ -463,7 +463,6 @@ int main(void)
 		
 		g_projection->renderLandscape();
 
-
 		// Callum
 		glEnable(GL_TEXTURE_2D);
 		initLight();
@@ -479,21 +478,20 @@ int main(void)
 		}
 		for(SpaceCoral c : spaceCoral){
 			glPushMatrix();
+			glScalef(20, 20, 20);
 			c.Draw();
 			glPopMatrix();
 		}
 		glPopMatrix();
+
 		// Stephen
 		// Enable Drawing texures
 		glEnable(GL_TEXTURE_2D);
 		if (g_simulate){
 			sceneMng->stepSimulation();
 		}
-		glPushMatrix();
-		  glTranslatef(0, 0, 0);
-		  sceneMng->draw();
-		glPopMatrix();
 
+		sceneMng->draw();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

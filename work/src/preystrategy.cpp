@@ -3,6 +3,7 @@
 #include "boid.hpp"
 #include "scenemanager.hpp"
 #include "mainheaders.hpp"
+#include <math.h>
 
 using namespace glm;
 using namespace std;
@@ -13,13 +14,43 @@ using namespace std;
 vec3 PreyStrategy::keepInScreen(Boid* parent, SceneManager* scene){
 	// Centered
 	vec3 centered = vec3(0, 0, 0);
-	vec3 center = scene->getXYZMin() + (scene->getXYZMax() - scene->getXYZMin()) * 0.5f;
-
+	vec3 size = (scene->getXYZMax() - scene->getXYZMin()) * 0.5f;
+	vec3 center = scene->getXYZMin() + size;
+	//size *= 0.5f;
 	centered = center - parent->getPosition();
-	centered /= length((scene->getXYZMax() - scene->getXYZMin())*0.25f);
+	centered /= (scene->getXYZMax() - scene->getXYZMin()) * 0.5f;
 	if (length(centered) < 0.5f)
 		return vec3();
+	/**
+	vec3 p = parent->getPosition();
+	if (p.x < center.x - size.x) centered.x = 1;
+	if (p.x > center.x + size.x) centered.x = -1;
+
+	if (p.y < center.y - size.y) centered.y = 1;
+	if (p.y > center.y + size.y) centered.y = -1;
+
+	if (p.z < center.z - size.z) centered.z = 1;
+	if (p.z > center.z + size.z) centered.z = -1;*/
+
 	return centered;
+}
+
+/*
+* Keep above the sand and below the surface
+*/
+vec3 PreyStrategy::keepInSea(Boid* parent, SceneManager* scene){
+	vec3 steerAmount;
+	vec3 pos = parent->getPosition();
+	vec3 dir = parent->getDirection();
+
+	float floorY = scene->getTerrainHeight(pos.x, pos.z);
+	if (pos.y - floorY < 10){
+		steerAmount.x = dir.x;
+		steerAmount.y = 1;
+		steerAmount.z = dir.z;
+	}
+
+	return steerAmount;
 }
 
 /**
@@ -30,49 +61,58 @@ vec3 PreyStrategy::mainRules(vector<Boid*>* b, Boid* parent, bool *pred){
 	vec3 alignment = vec3(0, 0, 0);
 	vec3 cohesion = vec3(0, 0, 0);
 	vec3 predator = vec3(0, 0, 0);
-	bool sep = false;
+
+	int sepCount = 0;
+	int cohCount = 0;
 
 	for (vector<Boid*>::iterator i = b->begin(); i != b->end(); ++i){
 		if (&(*(*i)) != &(*parent) && dot(parent->getDirection(), (*i)->getPosition() - parent->getPosition()) > 0){
 			alignment += (*i)->getDirection();
 			cohesion += (*i)->getPosition();
+			cohCount++;
 		}
 
 		if (&(*(*i)) != &(*parent)){
-			if (length((*i)->getPosition() - parent->getPosition()) < (parent->getSize() + (*i)->getSize()) * 2.f){
-				separation += (*i)->getPosition();
-				sep = true;
+			if (length(parent->getPosition() - (*i)->getPosition()) < 40.f){
+
+				separation += (parent->getPosition() - (*i)->getPosition());
+				sepCount++;
 			}
 			if ((*i)->getFishType() == PREDATOR){
 				predator += (*i)->getPosition() + (*i)->getDirection() * (*i)->getSize();
 				*pred = true;
 			}
 		}
-
 	}
 
+	if (cohCount > 0){
+		// Cohesion
+		cohesion /= cohCount;
+		cohesion = (cohesion - parent->getPosition()) - parent->getDirection();
 
-	// Cohesion
-	cohesion /= (b->size() - 1.f);
-	cohesion = normalize(cohesion - parent->getPosition());
+		// Alignment
+		alignment /= cohCount;
+		alignment -= parent->getDirection();
+	}
 
 	// Seperation
-	if (sep){
-		separation /= (b->size() - 1.f);
-		separation = normalize(parent->getPosition() - separation);
+	if (sepCount > 0){
+		separation /= sepCount;
+		separation -= parent->getDirection();
+		separation = normalize(separation);
 	}
 
-	// Alignment
-	alignment /= (b->size() - 1);
 
 	// Swim from Predators
 	if (*pred){
 		predator /= (b->size() - 1.f);
-		predator = normalize(parent->getPosition()  + parent->getDirection() * parent->getSize() - predator);
+		predator = normalize(parent->getPosition() + parent->getDirection() * parent->getSize() - predator);
 	}
 
-	return separation + alignment * 0.7f + cohesion * 0.2f + predator;
+	//return cohesion;// *0.5f + predator; alignment + 
+	return separation + alignment * 0.4f + cohesion * 0.1f + predator;
 }
+
 
 /*
 * Returns a vec3 of where to go next
@@ -80,10 +120,10 @@ vec3 PreyStrategy::mainRules(vector<Boid*>* b, Boid* parent, bool *pred){
 vec3 PreyStrategy::applyRules(Boid* parent, SceneManager* scene){
 	vec3 halfRegion = vec3(40.f);
 	vector<Boid*>* b = scene->getBoids()->searchRegion(parent->getPosition() - halfRegion, parent->getPosition() + halfRegion);
-	vec3 dir = parent->getDirection() + keepInScreen(parent, scene);
+	vec3 dir = parent->getDirection() + keepInScreen(parent, scene) +keepInSea(parent, scene);
 	bool pred = false;
 
-	if (b->size() > 2){
+	if (b->size() > 1){
 		dir += mainRules(b, parent, &pred);
 	}
 

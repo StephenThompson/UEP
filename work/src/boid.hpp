@@ -17,7 +17,7 @@ private:
 	FishType type;
 
 public:
-	Boid(SceneManager*, BoidStrategy*, float, FishType type);
+	Boid(SceneManager*, BoidStrategy*, glm::vec3, glm::vec3, float, FishType type);
 	~Boid();
 	void stepSimulation();
 	glm::vec3 getPosition();

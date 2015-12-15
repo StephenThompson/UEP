@@ -2,13 +2,15 @@
 #include "scenemanager.hpp"
 #include "boidsystem.hpp"
 #include "mainheaders.hpp"
+#include "projection.hpp"
 
 using namespace std;
 using namespace glm;
 
-SceneManager::SceneManager(vec3 xyzMin, vec3 xyzMax){
+SceneManager::SceneManager(vec3 xyzMin, vec3 xyzMax, Projection* proj){
 	this->xyzMin = xyzMin;
 	this->xyzMax = xyzMax;
+	this->proj = proj;
 	boidTree = new Octree(xyzMin, xyzMax);
 
 }
@@ -45,6 +47,13 @@ vec3 SceneManager::getXYZMin(){
 */
 vec3 SceneManager::getXYZMax(){
 	return xyzMax;
+}
+
+/*
+* Returns height of the terrain at x and z
+*/
+float SceneManager::getTerrainHeight(float x, float z){
+	return proj->getHeight(x, z);
 }
 
 /*

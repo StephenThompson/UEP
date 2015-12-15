@@ -24,6 +24,6 @@ uniform float shift;
 void main() {
 	vNormal = normalize(gl_NormalMatrix * gl_Normal);
 	vPosition = vec3(gl_ModelViewProjectionMatrix * gl_Vertex);
-	vTextureCoord0 = vec2(gl_Vertex.x+shift,gl_Vertex.z+shift);
+	vTextureCoord0 = vec2(gl_Vertex.x +shift,gl_Vertex.z +shift);
 	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
 }

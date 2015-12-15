@@ -7,18 +7,14 @@
 using namespace std;
 using namespace glm;
 
-Boid::Boid(SceneManager* scene, BoidStrategy* strategy, float scale, FishType type){
+Boid::Boid(SceneManager* scene, BoidStrategy* strategy, vec3 position, vec3 direction, float scale, FishType type){
 	this->strategy = strategy;
 	this->sceneMng = scene;
 	this->type = type;
-
-	vec3 dimension = (scene->getXYZMax() - scene->getXYZMin());
-	position = vec3(scene->getXYZMin().x + dimension.x * 0.5f + ((rand() % 200) / 200.f)*(dimension.x*0.25f),
-		scene->getXYZMin().y + dimension.y * 0.5f + ((rand() % 200) / 200.f)*(dimension.y*0.25f),
-		scene->getXYZMin().z + dimension.z * 0.5f + ((rand() % 200) / 200.f)*(dimension.z*0.25f));
+	this->position = position;
+	this->direction = direction;
 
 	oldPosition = position + direction;
-	direction = vec3(((rand() % 200) / 100.f - 1), ((rand() % 200) / 100.f - 1), ((rand() % 200) / 100.f - 1));
 	scaleSize = scale * (rand() % 100 / 100.f + 2.f);
 	time = radians(float(rand() % 360));
 }

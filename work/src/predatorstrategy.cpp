@@ -16,10 +16,31 @@ vec3 PredatorStrategy::keepInScreen(Boid* parent, SceneManager* scene){
 	vec3 center = scene->getXYZMin() + (scene->getXYZMax() - scene->getXYZMin()) * 0.5f;
 
 	centered = center - parent->getPosition();
-	centered /= length(scene->getXYZMax() - scene->getXYZMin());
+	//centered /= length(scene->getXYZMax() - scene->getXYZMin()) * 0.75f;
+	centered /= (scene->getXYZMax() - scene->getXYZMin());
 	if (length(centered) < 0.5f)
 		return vec3();
 	return centered;
+}
+
+/*
+* Keep above the sand and below the surface
+*/
+vec3 PredatorStrategy::keepInSea(Boid* parent, SceneManager* scene){
+	vec3 steerAmount;
+	vec3 pos = parent->getPosition();
+	vec3 dir = parent->getDirection();
+	float threshold = 200;
+
+	float floorY = scene->getTerrainHeight(pos.x, pos.z);
+	if (pos.y - floorY < threshold){
+		float frac = 1 - (pos.y - floorY) / threshold;
+		steerAmount.x = dir.x * frac;
+		steerAmount.y = frac;
+		steerAmount.z = dir.z * frac;
+	}
+
+	return steerAmount;
 }
 
 /**
@@ -50,7 +71,7 @@ vec3 PredatorStrategy::mainRules(vector<Boid*>* b, Boid* parent){
 vec3 PredatorStrategy::applyRules(Boid* parent, SceneManager* scene){
 	vec3 halfRegion = vec3(20.f);
 	//vector<Boid*>* b = scene->getBoids()->searchRegion(parent->getPosition() - halfRegion, parent->getPosition() + halfRegion);
-	vec3 dir = parent->getDirection() + keepInScreen(parent, scene);
+	vec3 dir = parent->getDirection() + keepInScreen(parent, scene) + keepInSea(parent, scene);
 	/*
 	if (b->size() > 2){
 		dir += mainRules(b, parent);

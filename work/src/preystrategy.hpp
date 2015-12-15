@@ -13,7 +13,8 @@ class Boid;
 
 class PreyStrategy : public BoidStrategy {
 	private:
-		glm::vec3 keepInScreen(Boid* parent, SceneManager* scene);
+		glm::vec3 keepInScreen(Boid* parent, SceneManager* scene); 
+		glm::vec3 keepInSea(Boid* parent, SceneManager* scene);
 		glm::vec3 mainRules(std::vector<Boid*>* b, Boid* parent, bool*);
 	public:
 		glm::vec3 applyRules(Boid* b, SceneManager* s);
