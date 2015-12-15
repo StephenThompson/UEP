@@ -3,7 +3,7 @@
 // Constant across both shaders
 uniform sampler2D texture0;
 uniform sampler2D texture1;
-uniform float BlendFactor = 0.65f;
+uniform float BlendFactor = 0.45f;
 
 // Values passed in from the vertex shader
 varying vec3 vNormal;
@@ -19,10 +19,10 @@ varying vec4 curVertex;
 void main() {
 
 	float brightness = 2.5f;
-
+	
+	vec4 texel0 = texture2D(texture0, vTextureCoord0*0.5f)*1.5f;
     vec4 texel1 = texture2D(texture1, vTextureCoord1*0.5f);
-    vec4 texel0 = texture2D(texture0, vTextureCoord0*0.5f);
-
+    
     vec4 blended = (texel0*(BlendFactor)+texel1*(1.f-BlendFactor));
     vec4 mixed = mix(texel0.rrrr,vec4(0.15f,0.5f,0.65f,1.0f),vec4(0.15f,0.5f,0.65f,1.0f));
     //gl_FragColor = blended*mixed*curVertex.y*brightness;

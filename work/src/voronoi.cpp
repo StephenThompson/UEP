@@ -78,7 +78,7 @@ void Voronoi::CreateSites(){
 			//
 			glColor3f(1,1,1);
 			glVertex3f(points[p].x + rad_x, points[p].y + rad_y,0);//output vertex
-			glColor3f(0.2,0.2,0.2);
+			glColor3f(0.3,0.3,0.3);
 			glVertex3f(points[p].x, points[p].y,0.5);
 
 			theta = 2.0f * 3.1415926f * float(i+1) / float(20);//get the current angle
